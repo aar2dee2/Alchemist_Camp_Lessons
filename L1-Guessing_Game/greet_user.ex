@@ -6,7 +6,7 @@ defmodule GreetUser do
   @doc """
   Accept the name of the user as input and greet the user. If the user inputs the name of the programmer, output a different greeting.
   """
-
+  @doc since: "Erlang/OTP 24 Elixir 1.12.1"
   @spec greet(String.t()) :: String.t()
   def greet(name) do
     formatted_name = String.trim(name) |> String.downcase()

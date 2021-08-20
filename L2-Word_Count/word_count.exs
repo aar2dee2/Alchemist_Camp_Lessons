@@ -1,9 +1,10 @@
 filename = IO.gets("Enter the name of the file (including parent folder) to count the words from: ") |> String.trim()
 
-choice = IO.gets("Pick what you want to count:
-1. (L)ines
-2. (W)ords
-3. (C)haracters >") |> String.trim() |> String.first()
+choice = IO.gets(~s{Pick what you want to count:
+                    1. (L)ines (Enter "1" or "l" or "L")
+                    2. (W)ords (Enter "2" or "w" or "W")
+                    3. (C)haracters > (Enter "3" or "c" or "C")}) 
+        |> String.trim() |> String.first()
 
 num = FileCount.count(filename, choice)
 

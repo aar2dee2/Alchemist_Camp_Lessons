@@ -39,10 +39,10 @@ defmodule FileCount do
   end
 
   def count(filename, _choice) do
-    new_choice = IO.gets("Make one of the following choices:
-                          1. (L)ines
-                          2. (W)ords
-                          3. (C)haracters >")
+    new_choice = IO.gets(~s{Make one of the following choices:
+                          1. (L)ines (Enter "1" or "l" or "L")
+                          2. (W)ords (Enter "2" or "w" or "W")
+                          3. (C)haracters >) (Enter "3" or "c" or "C")})
                   |> String.trim()
                   |> String.first()
     count(filename, new_choice)
