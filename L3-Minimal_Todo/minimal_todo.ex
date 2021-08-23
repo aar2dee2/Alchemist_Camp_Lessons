@@ -13,7 +13,13 @@ defmodule MinimalTodo do
   """
   @doc since: "1.12.1"
   def start() do
-    load_csv()
+    input = IO.gets("Would you like to create a new .csv? (y/n)\n")
+            |> String.trim()
+            |> String.first()
+    case input do
+      "y" -> create_initial_todo() |> get_command()
+      _ -> load_csv()
+    end
   end
 
 
@@ -33,6 +39,28 @@ defmodule MinimalTodo do
     new_data = Map.merge(data, new_todo)
     get_command(new_data)
   end
+
+  def create_header(headers) do
+    case IO.gets("Add field: ") |> String.trim() do
+      "" -> headers
+      header -> create_header([header | headers])
+    end
+  end
+
+  def create_headers() do
+    IO.puts("What data should each todo have?\n" 
+    <> "Enter field names one-by-one and an empty line when you're done.\n")
+    create_header([])
+  end
+
+  def create_initial_todo() do
+    titles = create_headers()
+    name = get_item_name(%{})
+    fields = Enum.map(titles, &field_from_user(&1))
+    IO.puts ~s(new todo #{name} added.)
+    %{name => Enum.into(fields, %{})}
+  end
+
 
   def delete_todos(data) do
     todo = IO.gets("Which Todo would you like to delete?\n") |> String.trim()
@@ -132,8 +160,26 @@ defmodule MinimalTodo do
     end
   end
 
+  def prepare_csv(data) do
+    fields = get_fields(data)
+    headers = ["Items" | fields]
+    items = Map.keys(data)
+    item_rows = Enum.map(items, fn item -> [item | Map.values(data[item])] end)
+    rows = [headers | item_rows]
+    row_strings = Enum.map(rows, &Enum.join(&1, ","))
+    Enum.join(row_strings, "\n")
+
+  end
+
   def save_csv(data) do
-    
+    filename = IO.gets("name of .csv to save: ") |> String.trim()
+    filedata = prepare_csv(data)
+    case File.write(filename, filedata) do
+      :ok -> IO.puts "csv saved"
+      {:error, reason} -> IO.puts "Could not save file #{filename}"
+                          IO.puts ~s(#{:file.format_error reason}\n)
+                          get_command(data)
+    end
   end
 
   def show_todos(data, next_command? \\ true) do
