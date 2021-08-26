@@ -7,10 +7,13 @@ defmodule MiniMarkdown do
     text 
       |> bold()
       |> italics()
+      |> small()
+      |> big()
       |> h3()
       |> h2()
       |> h1()
       |> p()
+      |> breaks()
     #if the h1 function is called before h2, then '## ' also matches on the h1 regex. Hence, h2 is called first, and then h1.
   end
   
@@ -46,15 +49,17 @@ defmodule MiniMarkdown do
     Regex.replace(~r/(\#{3} )([^\n|\r|\r\n]+)([\n|\r|\r\n])/, text, "<h3>\\2</h3>")
   end
 
-  """
   def big(text) do
-    Regex.replace(~r//, text, "<big>\\1</big>>")
+    Regex.replace(~r/(%{2})(.[%{2}])(%{2})/, text, "<big>\\2</big>>")
+  end
+
+  def breaks(text) do
+    Regex.replace(~r/(\n|\r\n|\r)/, text, "<br>")
   end
 
   def small(text) do
-    Regex.replace(~r//, text, "<small>\\1</small>>")
+    Regex.replace(~r/(%{4})(.[%{4}])(%{4})/, text, "<small>\\2</small>>")
   end
-  """
 
   def test_string do
     """
