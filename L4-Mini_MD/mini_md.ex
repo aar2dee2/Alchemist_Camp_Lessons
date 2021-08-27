@@ -26,13 +26,18 @@ defmodule MiniMarkdown do
   end
 
   def p(text) do
-    Regex.replace(~r/(\n|\r|\r\n|^)+(?!\<h1\>)([^\r\n]+)((\n|\r|\r\n)+$)?/, text, "<p>\\2</p>")
+    Regex.replace(~r/(\n|\r|\r\n|^)+([^\#\<][^\r\n]+)((\n|\r|\r\n)+$)?/, text, "<p>\\2</p>")
     #Modified the regex from the video after creating the h1 function, coz otherwise headings were also getting enclosing in p tags due to the existing newline characters. Creating an additional break function now to match against remaining newline characters.
+    #this was the modified regex: ~r/(\n|\r|\r\n|^)+(?!\<h1\>)([^\r\n]+)((\n|\r|\r\n)+$)?/
+    #the above is very specific to avoiding h1 tags only, however there may be other html tags, such as <div> that are included in the markdown directly. So we modify the regex to not capture anything starting with '#' and '<'.
   end
 
   def h1(text) do
-    Regex.replace(~r/(\#{1} )([^\n|\r|\r\n]+)([\n|\r|\r\n])/, text, "<h1>\\2</h1>\\3")
-    #breakdown of the regex used:
+    Regex.replace(~r/(\r\n|\r|\n|^)\# +([^#][^\n|\r|\r\n]+)([\n|\r|\r\n])/, text, "<h1>\\2</h1>\\3")
+    #Regex used in video was: 
+    #since the heading must start on a new line or be at the beginning of the document we need to match for beginning of document or new line before capturing the '#'
+    #notice the '+' after the space '\# +' - A hash may be followed by any number of spaces for it be a heading. The extra spaces are just part of the heading. So we need to match on exactly one '#' sign and one or more spaces.
+    #breakdown of the regex used: ~r/(\#{1} )([^\n|\r|\r\n]+)([\n|\r|\r\n])/
     #first part is '# ', since # is a special character, it is escaped using a backslash '\'.
     #We're looking for one occurrence of '# ', which means 'we don't want '# # heading' to become 'heading', but '# heading'. So to get exactly one occurrence of a group we use {1}.
     #Now the '# ' can be followed by anything other than a new line so we create a group for anything other than newline by using the caret sign '^' before the newline symbol. We put this part in round brackets, because we want this part to be remembered - it will be used in our final output. so we get ([^\r\n]+) - we use the '+' sign to indicate one or more occurrences
@@ -42,15 +47,15 @@ defmodule MiniMarkdown do
 
   
   def h2(text) do
-    Regex.replace(~r/(\#{2} )([^\n|\r|\r\n]+)([\n|\r|\r\n])/, text, "<h2>\\2</h2>")
+    Regex.replace(~r/(\#{2} )([^\n|\r|\r\n]+)([\n|\r|\r\n])/, text, "<h2>\\2</h2>\\3")
   end
   
   def h3(text) do
-    Regex.replace(~r/(\#{3} )([^\n|\r|\r\n]+)([\n|\r|\r\n])/, text, "<h3>\\2</h3>")
+    Regex.replace(~r/(\#{3} )([^\n|\r|\r\n]+)([\n|\r|\r\n])/, text, "<h3>\\2</h3>\\3")
   end
 
   def big(text) do
-    Regex.replace(~r/(%{2})(.[%{2}])(%{2})/, text, "<big>\\2</big>>")
+    Regex.replace(~r/(%{2})([^%{2}]+)(%{2})/, text, "<big>\\2</big>")
   end
 
   def breaks(text) do
@@ -58,15 +63,16 @@ defmodule MiniMarkdown do
   end
 
   def small(text) do
-    Regex.replace(~r/(%{4})(.[%{4}])(%{4})/, text, "<small>\\2</small>>")
+    Regex.replace(~r/(%{4})([^%{4}]+)(%{4})/, text, "<small>\\2</small>")
   end
 
   def test_string do
     """
     I *so* enjoyed eating that burrito and the hot sauce was **amazing**
-    
+        
     ### So many headings
-    so less text
+    so less text %%%%this is going to be smaller%%%% than this text which is %%going to be huge%%
+
 
     # This is a heading
 
