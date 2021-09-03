@@ -12,7 +12,7 @@ defmodule AlchemyMd do
     Earmark.as_html!((markdown || ""), %Earmark.Options{smartypants: false})
     |> big()
     |> small()
-    |> hrs()
+    #|> hrs()
   end
 
   def big(s) do

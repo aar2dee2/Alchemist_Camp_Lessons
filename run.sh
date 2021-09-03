@@ -1,4 +1,5 @@
-cd L6
-elixir word_count.exs
+cd L6-AlchemyMD
+cd alchemy_md
 
-cd ..
+mix local.hex --force
+iex -S mix
