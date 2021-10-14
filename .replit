@@ -1,2 +1,5 @@
 language = "elixir"
 run = "bash run.sh"
+
+[env]
+LC_ALL = "en_US.UTF-8"
