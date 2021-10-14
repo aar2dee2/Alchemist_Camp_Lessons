@@ -6,6 +6,7 @@ defmodule WordCount.MixProject do
       app: :word_count,
       version: "0.1.0",
       elixir: "~> 1.12",
+      escript: [main_module: WordCount.CLI],
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
