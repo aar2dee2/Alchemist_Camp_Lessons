@@ -36,7 +36,13 @@ defmodule WordCount do
   end
 
   def read_file(parsed, file) do
-    flags = case do
+    flags = case Enum.count(parsed) do
+      0 -> [:words]
+      _ -> Enum.map parsed, &(elem(&1, 0))
     end
+
+    IO.inspect flags
   end
+
+  
 end
